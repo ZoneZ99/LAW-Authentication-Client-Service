@@ -9,6 +9,7 @@ Django==3.0.3
 djangorestframework==3.11.0
 idna==2.9
 pathspec==0.7.0
+python-dotenv==0.11.0
 pytz==2019.3
 regex==2020.2.20
 requests==2.23.0
