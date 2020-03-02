@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Metadata List</title>
+</head>
+<body>
+<div class="metadata-div">
+    <table class="metadata-table">
+        <caption>File Metadata</caption>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>URL</th>
+            <th>Created</th>
+            <th>Updated</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script>
+    $(document).ready(function () {
+
+        // https://stackoverflow.com/a/18650828
+        function formatBytes(a, b) {
+            if (0 === a) return "0 Bytes";
+            var c = 1024, d = b || 2, e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
+                f = Math.floor(Math.log(a) / Math.log(c));
+            return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f]
+        }
+
+        function getAndRenderFileMetadata() {
+            $.get({
+                url: "/get-metadata-list/",
+                success: function (response) {
+                    response.metadata.forEach(metadata => {
+                        $(".metadata-table tbody").append(
+                            `<tr>
+                                <td>
+                                    <a href="/metadata/${metadata.id}">
+                                        ${metadata.name}
+                                    </a>
+                                </td>
+                                <td>${metadata.type}</td>
+                                <td>${formatBytes(metadata.size)}</td>
+                                <td>
+                                    <a href=${metadata.location.replace(/dl=0/, "dl=1")}>
+                                        Download Here
+                                    </a>
+                                </td>
+                                <td>${new Date(metadata.created)}</td>
+                                <td>${new Date(metadata.updated)}</td>
+                            </tr>`
+                        );
+                    });
+                }
+            });
+        }
+
+        getAndRenderFileMetadata();
+    });
+</script>
+</body>
+</html>
