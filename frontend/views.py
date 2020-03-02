@@ -1,7 +1,8 @@
+import json
 import os
 
 import requests
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotAllowed
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from dotenv import load_dotenv
@@ -44,6 +45,12 @@ def get_metadata_list(request):
         response = requests.get(url=f"{METADATA_SERVICE_URL}metadata/")
         return JsonResponse(data={"metadata": response.json()})
     else:
-        return JsonResponse(
-            data={"error": f"method {request.method} not allowed"}, status=405
-        )
+        return HttpResponseNotAllowed(permitted_methods=["GET"])
+
+
+def metadata_detail(request, metadata_id):
+    if request.method == "GET":
+        detail = requests.get(url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}").json()
+        return render(request, "metadata-detail.html", {"metadata": detail})
+    else:
+        return HttpResponseNotAllowed(permitted_methods=["GET"])

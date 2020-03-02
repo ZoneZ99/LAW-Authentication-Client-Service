@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Metadata Detail</title>
+</head>
+<body>
+<div>
+    <table class="metadata-table">
+        <caption>File Metadata</caption>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>URL</th>
+            <th>Created</th>
+            <th>Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ metadata.name }}</td>
+            <td>{{ metadata.type }}</td>
+            <td>{{ metadata.size }}</td>
+            <td>{{ metadata.location }}</td>
+            <td>{{ metadata.created }}</td>
+            <td>{{ metadata.updated }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
