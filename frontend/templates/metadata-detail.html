@@ -6,29 +6,74 @@
 </head>
 <body>
 <div>
-    <table class="metadata-table">
-        <caption>File Metadata</caption>
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>URL</th>
-            <th>Created</th>
-            <th>Updated</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>{{ metadata.name }}</td>
-            <td>{{ metadata.type }}</td>
-            <td>{{ metadata.size }}</td>
-            <td>{{ metadata.location }}</td>
-            <td>{{ metadata.created }}</td>
-            <td>{{ metadata.updated }}</td>
-        </tr>
-        </tbody>
-    </table>
+    <h3>Metadata Detail</h3>
+    <p class="file-name">Name: {{ metadata.name }}</p>
+    <p class="file-description">Description: {{ metadata.description }}</p>
+    <p>Type: {{ metadata.type }}</p>
+    <p>Size: {{ metadata.size }} bytes</p>
+    <p><a href="{{ metadata.location }}">Download</a></p>
+    <p>Created: {{ metadata.created }}</p>
+    <p>Updated: {{ metadata.updated }}</p>
+
+    <form method="post" class="edit-form">
+        {% csrf_token %}
+        <label>Name</label>
+        <input type="text" placeholder="name" name="name">
+        <br>
+        <label>Description</label>
+        <input type="text" placeholder="description" name="description">
+        <button class="edit-button" type="submit">Edit Metadata</button>
+    </form>
+
+    <br>
+    <br>
+
+    <form method="post" class="delete-form">
+        {% csrf_token %}
+        <button class="delete-button" type="submit">Delete Metadata</button>
+    </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $(".edit-form").submit(function (event) {
+            event.preventDefault();
+            let token = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": token
+                },
+                url: "{% url 'edit-metadata' metadata.id %}",
+                type: "PATCH",
+                data: {
+                    name: $("[name=name]").val(),
+                    description: $("[name=description]").val()
+                },
+                success: function (response) {
+                    alert("Metadata edited");
+                    $(".file-name").text(`Name: ${response.name}`);
+                    $(".file-description").text(`Description: ${response.description}`);
+                }
+            })
+        });
+
+        $(".delete-form").submit(function (event) {
+            event.preventDefault();
+            let token = $("[name=csrfmiddlewaretoken]").val();
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": token
+                },
+                url: "{% url 'delete-metadata' metadata.id %}",
+                type: "DELETE",
+                success: function () {
+                    alert("Metadata deleted.");
+                    window.location.href = "{% url 'metadata-list-page' %}";
+                }
+            })
+        });
+    });
+</script>
 </body>
 </html>

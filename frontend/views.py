@@ -1,11 +1,11 @@
-import json
 import os
 
 import requests
-from django.http import JsonResponse, HttpResponseNotAllowed
+from django.http import JsonResponse, HttpResponseNotAllowed, QueryDict
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from dotenv import load_dotenv
+from rest_framework import status
 
 from frontend.forms import UploadFileForm
 
@@ -50,7 +50,29 @@ def get_metadata_list(request):
 
 def metadata_detail(request, metadata_id):
     if request.method == "GET":
-        detail = requests.get(url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}").json()
+        detail = requests.get(
+            url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/"
+        ).json()
         return render(request, "metadata-detail.html", {"metadata": detail})
     else:
         return HttpResponseNotAllowed(permitted_methods=["GET"])
+
+
+def edit_metadata(request, metadata_id):
+    if request.method == "PATCH":
+        data = QueryDict(request.body)
+        response = requests.patch(
+            url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/",
+            data={"name": data["name"], "description": data["description"],},
+        )
+        return JsonResponse(data=response.json(), status=status.HTTP_200_OK)
+    else:
+        return HttpResponseNotAllowed(permitted_methods=["PATCH"])
+
+
+def delete_metadata(request, metadata_id):
+    if request.method == "DELETE":
+        requests.delete(url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/")
+        return JsonResponse(data={}, status=status.HTTP_200_OK)
+    else:
+        return HttpResponseNotAllowed(permitted_methods=["DELETE"])
