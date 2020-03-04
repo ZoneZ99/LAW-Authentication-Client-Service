@@ -6,7 +6,7 @@
 </head>
 <body>
 <div>
-    <h1>Login To OAuth</h1>
+    <h1>Login To Your LAW OAuth Account</h1>
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}

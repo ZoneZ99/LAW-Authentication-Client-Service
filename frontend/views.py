@@ -49,11 +49,20 @@ def sign_in_page(request):
         return HttpResponseNotAllowed(permitted_methods=["GET", "POST"])
 
 
-def process_uploaded_file(file):
+def logout(request):
+    if request.method == "POST":
+        request.session.flush()
+        return redirect(reverse("login"))
+    else:
+        return HttpResponseNotAllowed(permitted_methods=["POST"])
+
+
+def process_uploaded_file(request, file):
     requests.post(
         url=f"{COMPRESSION_SERVICE_URL}compress/",
         files={"file": file.file},
         data={"filename": file.name},
+        headers={"Authorization": f"Bearer {request.session['access_token']}"},
     )
     return redirect(reverse("metadata-list-page"))
 
@@ -63,7 +72,7 @@ def upload_page(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            return process_uploaded_file(request.FILES["file"])
+            return process_uploaded_file(request, request.FILES["file"])
         else:
             form = UploadFileForm(request.POST, request.FILES)
     else:
@@ -79,7 +88,10 @@ def metadata_list_page(request):
 @LAW_login_required
 def get_metadata_list(request):
     if request.method == "GET":
-        response = requests.get(url=f"{METADATA_SERVICE_URL}metadata/")
+        response = requests.get(
+            url=f"{METADATA_SERVICE_URL}metadata/",
+            headers={"Authorization": f"Bearer {request.session['access_token']}"},
+        )
         return JsonResponse(data={"metadata": response.json()})
     else:
         return HttpResponseNotAllowed(permitted_methods=["GET"])
@@ -89,7 +101,8 @@ def get_metadata_list(request):
 def metadata_detail(request, metadata_id):
     if request.method == "GET":
         detail = requests.get(
-            url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/"
+            url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/",
+            headers={"Authorization": f"Bearer {request.session['access_token']}"},
         ).json()
         return render(request, "metadata-detail.html", {"metadata": detail})
     else:
@@ -102,7 +115,8 @@ def edit_metadata(request, metadata_id):
         data = QueryDict(request.body)
         response = requests.patch(
             url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/",
-            data={"name": data["name"], "description": data["description"],},
+            data={"name": data["name"], "description": data["description"]},
+            headers={"Authorization": f"Bearer {request.session['access_token']}"},
         )
         return JsonResponse(data=response.json(), status=status.HTTP_200_OK)
     else:
@@ -112,7 +126,10 @@ def edit_metadata(request, metadata_id):
 @LAW_login_required
 def delete_metadata(request, metadata_id):
     if request.method == "DELETE":
-        requests.delete(url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/")
+        requests.delete(
+            url=f"{METADATA_SERVICE_URL}metadata/{metadata_id}/",
+            headers={"Authorization": f"Bearer {request.session['access_token']}"},
+        )
         return JsonResponse(data={}, status=status.HTTP_200_OK)
     else:
         return HttpResponseNotAllowed(permitted_methods=["DELETE"])

@@ -20,6 +20,10 @@
         </thead>
         <tbody></tbody>
     </table>
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 <script>
