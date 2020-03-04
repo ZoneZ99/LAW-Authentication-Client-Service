@@ -20,6 +20,9 @@
         </thead>
         <tbody></tbody>
     </table>
+    <button>
+        <a href="{% url 'upload-page' %}">Upload A File</a>
+    </button>
     <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <button type="submit">Logout</button>
