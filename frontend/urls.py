@@ -7,10 +7,12 @@ from frontend.views import (
     metadata_detail,
     edit_metadata,
     delete_metadata,
+    sign_in_page,
 )
 
 urlpatterns = [
     path("", upload_page, name="upload-page"),
+    path("login/", sign_in_page, name="login"),
     path("metadata-list/", metadata_list_page, name="metadata-list-page"),
     path("get-metadata-list/", get_metadata_list, name="get-metadata-list"),
     path("metadata/<str:metadata_id>", metadata_detail, name="metadata-detail"),
