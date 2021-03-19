@@ -1,5 +1,5 @@
 black==19.10b0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 dropbox==9.4.0
 pip-chill==1.0.0
 pyjwt==1.7.1
